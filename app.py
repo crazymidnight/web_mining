@@ -18,8 +18,8 @@ def get_user_group(id):
 
 
 def parse_group():
-    top_groups = {}
     members_counts = api.groups.getMembers(group_id="ic_tpu", offset=4000)["count"]
+    top_groups = {"ic_tpu": members_counts}
     print(members_counts)
     chunks = members_counts // 1000 + 1
     for chunk in range(chunks):
@@ -49,7 +49,11 @@ if __name__ == "__main__":
     groups = parse_group()
     df = pd.DataFrame()
     df["count"] = pd.Series(groups).nlargest(10)
+    df["screen_name"] = df.index
+    df["name"] = df["screen_name"].apply(
+        lambda x: api.groups.getById(group_id=x)[0]["name"]
+    )
     print("Top 10:")
-    print(df)
+    print(df.loc[:, ["name", "count"]])
     print("Save to CSV")
     df.to_csv("groups.csv")
