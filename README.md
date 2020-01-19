@@ -1,2 +1,2 @@
 # web_mining
-Web data mining course
+Research VK communities using VK API
